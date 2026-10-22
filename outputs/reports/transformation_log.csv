@@ -1,0 +1,13 @@
+step,details,reason
+Structural missing text -> 'None',"PoolQC, MiscFeature, Alley, Fence, FireplaceQu, GarageType, GarageFinish, GarageQual, GarageCond, BsmtQual, BsmtCond, BsmtExposure, BsmtFinType1, BsmtFinType2, MasVnrType","Blank means the feature is absent (no pool, garage, basement, etc.)"
+Structural missing numbers -> 0,"GarageCars, GarageArea, TotalBsmtSF, BsmtFinSF1, BsmtFinSF2, BsmtUnfSF, BsmtFullBath, BsmtHalfBath, MasVnrArea",Absent facility has zero area or zero count
+"Outliers flagged, not removed","IQR rule on LotArea, LotFrontage, GrLivArea, TotalBsmtSF, GarageArea, SalePrice",Large or expensive houses can be legitimate; removal decided in modeling phase
+Engineered 8 features,"TotalSF, TotalBathrooms, TotalPorchSF, HouseAgeAtSale, YearsSinceRemodel, HasPool, HasGarage, HasFireplace",Combine related columns into measurements closer to how buyers think; uses only information known at sale time
+Clipped negative ages to 0,"HouseAgeAtSale, YearsSinceRemodel","A house sold just before completion has age -1; age cannot be negative, row kept"
+Created log1p(SalePrice) target,y_log = log1p(y_price); original kept as y_price; not applied to test,SalePrice is right-skewed; log makes it more symmetric and matches the Kaggle metric
+Dropped GarageYrBlt,Removed from predictors,"Missing for no-garage houses, contains impossible year, duplicates YearBuilt; HasGarage keeps the information"
+"Converted MSSubClass, MoSold, YrSold to categories",numbers -> text labels,"They are codes/labels, not quantities"
+Removed Id and SalePrice from predictors,Id kept separately for tracking; target kept as y_price / y_log,Id is not informative; the target must never be a feature
+Train/validation split 80/20 (random_state=42),"Done BEFORE fitting any imputer, encoder or scaler",Prevents validation information from influencing learned preprocessing
+Median imputation + StandardScaler on numeric features,Fitted on training split only,Median resists outliers; scaling puts features on a comparable scale
+Most-frequent imputation + one-hot encoding on categorical features,handle_unknown='ignore'; fitted on training split only,Unknown labels get the common value; one-hot avoids fake ordering; unseen categories do not crash

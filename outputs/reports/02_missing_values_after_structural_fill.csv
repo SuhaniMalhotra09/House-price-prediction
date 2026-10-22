@@ -1,0 +1,11 @@
+,train_missing,test_missing
+Electrical,1,0
+Exterior1st,0,1
+Exterior2nd,0,1
+Functional,0,2
+GarageYrBlt,81,78
+KitchenQual,0,1
+LotFrontage,259,227
+MSZoning,0,4
+SaleType,0,1
+Utilities,0,2

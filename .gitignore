@@ -1,0 +1,16 @@
+# Python and Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+.DS_Store
+
+# Raw Kaggle data
+train.csv
+test.csv
+data_description.txt
+
+# Generated files
+models/
+*.joblib
+outputs/submission.csv

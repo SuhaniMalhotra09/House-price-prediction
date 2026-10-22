@@ -1,0 +1,7 @@
+check,count
+Negative values in numeric columns,0
+Remodeled before built (train),0
+Sold before built (train),0
+Garage built after sale (train),0
+Impossible garage year (train),0
+Impossible garage year (test),1
