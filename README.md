@@ -1,223 +1,99 @@
 # House Price Prediction
 
-A machine learning project to predict residential house prices using the Ames Housing dataset from Kaggle's House Prices: Advanced Regression Techniques competition.
+A supervised machine-learning regression project that predicts residential sale prices using the Ames Housing dataset from Kaggle's **House Prices: Advanced Regression Techniques** competition.
 
-The project explores the complete regression workflow, from exploratory data analysis and data preprocessing to model comparison, hyperparameter tuning, evaluation, and final prediction generation.
-
-## Project Overview
-
-The objective is to predict the final sale price (`SalePrice`) of residential properties using their structural, geographical, and qualitative characteristics.
-
-The project focuses on understanding the dataset, building a reliable preprocessing workflow, comparing regression algorithms, and selecting a model using cross-validation.
+The project covers exploratory data analysis, data cleaning, feature engineering, preprocessing pipelines, model comparison, cross-validation, hyperparameter tuning, validation, and Kaggle-format prediction generation.
 
 ## Dataset
 
-Source: [Kaggle - House Prices: Advanced Regression Techniques](https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques/data)
+Source: [Kaggle – House Prices: Advanced Regression Techniques](https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques/data)
 
-The dataset contains:
-- Training data: 1,460 records and 81 columns.
-- Testing data: 1,459 records and 80 columns.
-- Target variable: SalePrice.
+- Training set: 1,460 houses and 81 columns (including `SalePrice`).
+- Test set: 1,459 houses and 80 columns.
+- Target: `SalePrice`.
 
-Download `train.csv` and `test.csv` from Kaggle and place them inside `data/raw/`.
+Download `train.csv` and `test.csv` from Kaggle and place both files in the repository's root directory, alongside the notebook. The datasets are not included in this repository.
 
 ## Project Structure
 
 ```text
 House-price-prediction/
-│
-├── data/
-│   └── raw/
-│       ├── train.csv
-│       └── test.csv
-│
-├── figures_detailed/
-│   ├── 01_saleprice_hist.png
-│   ├── 04_top10_correlation.png
-│   ├── 09_missing_values.png
-│   ├── 13_cv_rmse_models.png
-│   ├── 16_actual_vs_predicted.png
-│   └── ...
-│
-├── processed_data/
-│
-├── outputs/
-│
-├── house_prices_data_preprocessing (1).ipynb
+├── figures_detailed/                 # EDA, model-comparison and diagnostic plots
+├── outputs/                          # Saved analysis and preprocessing outputs
+├── processed_data/                   # Processed datasets and reports
 ├── model_training_and_evaluation.ipynb
-├── submission.csv
+├── submission.csv                    # Generated Kaggle-format predictions
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-## Machine Learning Workflow
+## Workflow
 
-### 1. Data Understanding and Exploratory Data Analysis
+1. **Data understanding and EDA:** inspect dimensions, data types, summary statistics, target distribution, feature relationships and correlations.
+2. **Data quality and cleaning:** check duplicates and invalid values; distinguish structural missing values from genuinely unknown values.
+3. **Outlier analysis:** use the IQR rule to flag unusual observations, then remove only the two identified abnormal partial-sale records from the training data.
+4. **Feature engineering:** create `TotalSF`, `TotalBathrooms` and `HouseAge`.
+5. **Feature preparation:** ordinal-encode quality ratings, one-hot encode nominal categories, transform skewed features and remove unreliable `GarageYrBlt`.
+6. **Preprocessing pipeline:** impute remaining missing values, scale numeric features and one-hot encode categorical features. Learned preprocessing steps are fitted within the training pipeline.
+7. **Model comparison and tuning:** compare a mean baseline and nine regression models using 5-fold cross-validation; tune Ridge, Lasso and Gradient Boosting with `GridSearchCV`.
+8. **Evaluation and prediction:** select the tuned model using cross-validation, evaluate it on a held-out validation set, inspect residuals and feature coefficients, then train on the labelled data for test-set predictions.
 
-- Dataset dimensions and data types.
-- Missing-value analysis.
-- Statistical summaries.
-- SalePrice distribution.
-- Numerical feature distributions.
-- Correlation analysis.
-- Relationship between important features and house prices.
+## Results
 
-### 2. Data Cleaning and Preprocessing
+**Best model: Ridge Regression (`alpha=30`)**, selected using the lowest 5-fold cross-validation RMSE among the tuned candidates.
 
-- Missing-value treatment.
-- Handling invalid and inconsistent values.
-- Outlier investigation.
-- Feature engineering.
-- Categorical and numerical feature identification.
-- Skewness treatment.
-- One-hot encoding.
-- Missing-value imputation.
-- Standard scaling.
-- Scikit-learn preprocessing pipelines.
+| Metric | Ridge (selected model) | Mean baseline |
+|---|---:|---:|
+| 5-fold CV RMSE (log price) | **0.1102** | — |
+| Validation R² (log target) | **0.9123** | -0.0058 |
+| Validation RMSE (price) | **$23,897** | $88,272 |
+| Validation MAE (price) | **$15,041** | $59,930 |
+| Validation median percentage error | **6.18%** | 27.08% |
 
-### 3. Feature Engineering
+The validation results are from the notebook's saved run using an 80/20 train-validation split (random state 42). Dollar-based errors are calculated after converting predictions back from the logarithmic scale. The validation set contains 292 houses and is separate from the data used to fit and tune the models.
 
-Important engineered features include:
-- TotalSF
-- HouseAge
-- RemodAge
-- TotalBathrooms
-- OverallQual-related features
-
-### 4. Model Training and Comparison
-
-The notebook compares the following regression models:
-
-| Model | Configuration |
-|---|---|
-| Baseline | Mean prediction |
-| Linear Regression | Default |
-| Ridge Regression | alpha = 10 |
-| Lasso Regression | alpha = 0.001 |
-| KNN | k = 5 |
-| Decision Tree | Unlimited depth |
-| Decision Tree | Maximum depth = 5 |
-| Random Forest | 200 estimators |
-| Extra Trees | 200 estimators |
-| Gradient Boosting | 300 estimators |
-
-### 5. Model Evaluation
-
-Models are compared using 5-fold cross-validation.
-
-Evaluation metrics include:
-- RMSE
-- MAE
-- R-squared
-- Median percentage error
-
-The selection process prioritizes cross-validation RMSE while keeping validation performance for independent evaluation.
-
-### 6. Hyperparameter Tuning
-
-GridSearchCV is used to tune:
-- Ridge Regression
-- Lasso Regression
-- Gradient Boosting
-
-### 7. Final Predictions
-
-The selected model is refitted using the available training and validation data.
-
-Predictions are transformed back from logarithmic scale and exported to `submission.csv`.
-
-The generated submission contains:
-- Id
-- SalePrice
+**Important:** these are local validation results, not a Kaggle leaderboard score. The competition test labels are hidden, so a test-set RMSE or R² cannot be calculated from the supplied test data.
 
 ## Visualizations
 
-Selected visualizations generated by the project:
+The `figures_detailed/` folder contains the notebook's plots, including:
 
-### SalePrice Distribution
+- Sale-price and feature distributions.
+- Correlation and missing-value analysis.
+- Cross-validation model comparison.
+- Actual-versus-predicted prices and residual diagnostics.
+- Feature coefficients for the selected Ridge model.
 
-![SalePrice Distribution](figures_detailed/01_saleprice_hist.png)
+## Run the Project
 
-### Feature Correlation
+1. Clone the repository:
 
-![Feature Correlation](figures_detailed/04_top10_correlation.png)
+   ```bash
+   git clone https://github.com/SuhaniMalhotra09/House-price-prediction.git
+   cd House-price-prediction
+   ```
 
-### Missing Values
+2. Install dependencies:
 
-![Missing Values](figures_detailed/09_missing_values.png)
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Model Comparison
+3. Download `train.csv` and `test.csv` from the Kaggle competition and place them in the repository root.
 
-![Cross Validation RMSE](figures_detailed/13_cv_rmse_models.png)
+4. Start Jupyter and run `model_training_and_evaluation.ipynb` from top to bottom:
 
-### Actual vs Predicted Prices
+   ```bash
+   jupyter notebook
+   ```
 
-![Actual vs Predicted](figures_detailed/16_actual_vs_predicted.png)
+The notebook saves the final test predictions to `submission.csv` with the required `Id` and `SalePrice` columns.
 
-### Feature Importance
+## Technologies
 
-![Feature Importance](figures_detailed/19_feature_importance.png)
-
-## Technologies Used
-
-- Python
-- Pandas
-- NumPy
-- Matplotlib
-- Scikit-learn
-- Jupyter Notebook
-
-## Installation and Execution
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/SuhaniMalhotra09/House-price-prediction.git
-
-cd House-price-prediction
-```
-
-### 2. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Download the dataset
-
-Download `train.csv` and `test.csv` from the Kaggle competition and place both files inside:
-
-```text
-data/raw/
-```
-
-### 4. Launch Jupyter Notebook
-
-```bash
-jupyter notebook
-```
-
-Open:
-
-`model_training_and_evaluation.ipynb`
-
-Run the notebook cells sequentially.
-
-## Future Improvements
-
-- Experiment with additional boosting algorithms.
-- Explore ensemble and stacking techniques.
-- Perform further feature selection.
-- Improve generalization through repeated cross-validation.
-- Optimize the model for Kaggle leaderboard performance.
+Python, Pandas, NumPy, Matplotlib, scikit-learn and Jupyter Notebook.
 
 ## Author
 
-Suhani Malhotra
-
-GitHub: [SuhaniMalhotra09](https://github.com/SuhaniMalhotra09)
-
----
-
-This project is developed for learning and experimentation with end-to-end machine learning and regression techniques.
+Suhani Malhotra · [GitHub](https://github.com/SuhaniMalhotra09)
