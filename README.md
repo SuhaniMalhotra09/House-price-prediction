@@ -47,7 +47,7 @@ House-price-prediction/
 |---|---:|---:|
 | 5-fold CV RMSE (log price) | **0.1102** | — |
 | Validation R² (log target) | **0.9123** | -0.0058 |
-| Validation RMSE (price) | **$23,897** | $88,272 |
+| Validation RMSE (price) | **$23,905** | $88,272 |
 | Validation MAE (price) | **$15,041** | $59,930 |
 | Validation median percentage error | **6.18%** | 27.08% |
 
